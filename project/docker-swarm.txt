@@ -1,0 +1,17 @@
+
+«««««««««««««««««««««««««««««««««««««««««««««««
+
+Docker swarm
+
+manager node
+worker node
+
+Any services can be deployed  and accessed by any node of same cluster.while creating a service, a user has to specify
+ which container images to use.
+
+service is a description of  a tsak or the sttae whereas a task does the work. Docker enables a userto create services,whcih can start tasks
+
+when a task is assigned to a node it cannot be assigned to another node.
+
+
+
