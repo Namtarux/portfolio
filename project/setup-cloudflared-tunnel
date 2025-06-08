@@ -1,0 +1,71 @@
+Steps to set up cloudflare tunnel using trhe CLI
+
+1. check that cloudflare is installed on the device.
+    cloudflared --version
+
+2. Log in to cloudflare to authenticate your account
+
+   cloudflared tunnel login
+
+3. create a new tunnel
+
+   cloudflared tunnel create <name of tunnel>
+
+4. Create a config file for the tunnel 
+
+   create /etc/cloudflared/config.yml with the folloewing contents
+
+    tunnel: <name of tunnel or idP>
+credentials-file: /home/user/.cloudflared/<TUNNEL_ID_FROM_PREVIOUS_STEP>.json
+
+ingress:
+  - hostname: nextcloud.example.com
+    service: http://localhost:80
+  - service: http_status:404
+
+Step 5: Route Traffic via Cloudflare
+Create a DNS record that points your domain to the tunnel:
+
+bash
+Copy
+Edit
+cloudflared tunnel route dns my-tunnel nextcloud.example.com
+
+
+
+
+5.Run the tunnel as a service on the manager node
+
+   create the file /etc/systemd/system/cloudflared.service    with the contents below
+
+   [Unit]
+Description=Cloudflare Tunnel
+After=network.target
+
+[Service]
+TimeoutStartSec=0
+Type=notify
+ExecStart=/usr/local/bin/cloudflared --config /home/user/.cloudflared/config.yml tunnel run nxtcloud-tunnel
+Restart=on-failure
+RestartSec=5s
+User=test
+
+[Install]
+WantedBy=multi-user.target
+
+6.Reload systemd and start the service
+
+    sudo systemctl daemon-reload
+   sudo systemctl enable --now cloudflared
+
+
+7. check the status
+
+    sudo systemctl status cloudflared
+
+
+8. configure DNS in cloudflare
+
+    cloudflared tunnel route dns <TUNNEL_NAME> nextcloud.example.com
+ 
+
